@@ -6,7 +6,7 @@
    - Fork the repository to your GitHub account by clicking the "Fork" button.
    - Alternatively, you can clone the repository directly to your local machine using the following command:
      ```sh
-     git clone https://github.com/your-username/rural-sangam.git
+     https://github.com/sahilbelurkar810/RURALSANGAM.git
      ```
 
 2. **Navigate to the Project Directory**
