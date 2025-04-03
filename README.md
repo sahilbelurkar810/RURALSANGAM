@@ -19,14 +19,12 @@
    - Ensure you have all the required dependencies installed by running:
      ```sh
      npm install  # If using Node.js
-     pip install -r requirements.txt  # If using Python
      ```
 
 4. **Run the Project**
    - Use the appropriate command to start the application:
      ```sh
      npm start  # For Node.js
-     python main.py  # If using Python
      ```
 
 5. **Contribute to the Project**
