@@ -1,4 +1,5 @@
 const volunteer = require('../models/Volunteer.js');
+const user = require('../models/User.js');
 
 //let volunteer fill his data
 const createVolunteer = async (req, res) => {
@@ -20,7 +21,11 @@ const createVolunteer = async (req, res) => {
         });
         res.status(201).json({ msg: 'Volunteer details added successfully', volunteerData });
     } catch (error) {
+        if (error.code === 11000) {
+            return res.status(400).json({ message: 'Email already exists' });
+        }else{
         res.status(500).json({ message: error.message });
+        }
     }
 }
 
@@ -38,10 +43,11 @@ const getAllVolunteers = async (req, res) => {
 const getVolunteerById = async (req, res) => {
     try {
         const volunteerData = await volunteer.findById(req.params.id);
+        const userData = await user.findOne({email: volunteerData.email});
         if (!volunteerData) return res.status(404).json({ msg: 'Volunteer not found' });
 
         // Authorization check
-        if (volunteerData.email !== req.user.email) {
+        if (volunteerData.email !== userData.email) {
             return res.status(403).json({ msg: 'Access denied' });
         }
 
@@ -55,13 +61,13 @@ const getVolunteerById = async (req, res) => {
 const updateVolunteerById = async (req, res) => {
     try {
         const volunteerData = await volunteer.findById(req.params.id);
+        const userData = await user.findOne({email: volunteerData.email});
         if (!volunteerData) return res.status(404).json({ msg: 'Volunteer not found' });
 
         // Authorization check
-        if (volunteerData.email !== req.user.email) {
+        if (volunteerData.email !== userData.email) {
             return res.status(403).json({ msg: 'Access denied' });
         }
-
         const updatedVolunteer = await volunteer.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.status(200).json(updatedVolunteer);
     } catch (error) {
@@ -73,10 +79,11 @@ const updateVolunteerById = async (req, res) => {
 const deleteVolunteerById = async (req, res) => {
     try {
         const volunteerData = await volunteer.findById(req.params.id);
+        const userData = await user.findOne({email: volunteerData.email});
         if (!volunteerData) return res.status(404).json({ msg: 'Volunteer not found' });
 
         // Authorization check
-        if (volunteerData.email !== req.user.email) {
+        if (volunteerData.email !== userData.email) {
             return res.status(403).json({ msg: 'Access denied' });
         }
 

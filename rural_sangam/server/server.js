@@ -4,6 +4,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/authRoutes');
 const volunteerRoutes = require('./routes/volunteerRoutes.js');
+const schoolRoutes = require('./routes/schoolRoutes.js');
 const connectDB = require('./config/db');
 
 
@@ -14,11 +15,13 @@ const app = express();
 connectDB();
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 //routes
 app.use('/api/auth', authRoutes);
 app.use('/api/volunteer', volunteerRoutes);
+app.use('/api/school', schoolRoutes);
 app.use((req, res) => {
     console.log(`Unhandled route: ${req.method} ${req.originalUrl}`);
     res.status(404).json({ message: 'Route not found' });
