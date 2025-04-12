@@ -34,6 +34,12 @@ const requestSchema = new mongoose.Schema({
             ref: 'Volunteer',
         },
     ],
+    isOpen: {
+        type: Boolean,
+        default: true
+    }
+},{
+    timestamps: true,
 })
 
 module.exports = mongoose.model('Request', requestSchema);

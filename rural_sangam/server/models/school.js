@@ -25,7 +25,7 @@ const schoolSchema = new mongoose.Schema({
     },
     images: {
         type: [String],
-        required: true,
+        required: false,
     },
     volunteers: [
         {

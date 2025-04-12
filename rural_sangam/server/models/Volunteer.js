@@ -67,4 +67,7 @@ volunteerSchema.pre('save', async function (next) {
     next();
 });
 
-module.exports = mongoose.model('Volunteer', volunteerSchema);
+// Avoid OverwriteModelError
+const Volunteer = mongoose.models.Volunteer || mongoose.model('Volunteer', volunteerSchema);
+
+module.exports = Volunteer;
