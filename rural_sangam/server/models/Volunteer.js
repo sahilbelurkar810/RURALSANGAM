@@ -3,6 +3,11 @@ const mongoose = require('mongoose');
 const Register = require('./User.js')
 
 const volunteerSchema = new mongoose.Schema({
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
     name: {
         type: String,
         required: true,
@@ -38,7 +43,7 @@ const volunteerSchema = new mongoose.Schema({
     },
     contribution: {
         type: String,
-        required: true,
+        required: false,
     },
     requestedSchool: {
         type: mongoose.Schema.Types.ObjectId,
