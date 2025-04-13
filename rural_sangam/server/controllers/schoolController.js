@@ -4,11 +4,12 @@ const createSchool = async (req, res) => {
     try {
         const { name, email, phoneNumber, address, description } = req.body;
         const schoolData = await school.create({
-            name,
-            email,
-            phoneNumber,
-            address,
-            description,
+          userId: req.user.id,
+          name,
+          email,
+          phoneNumber,
+          address,
+          description,
         });
         res.status(201).json({ msg: 'School details added successfully', schoolData });
     } catch (error) {

@@ -4,7 +4,9 @@ const {
     createRequest,
     getOpenRequests,
     applyToRequest,
-    getMyRequests
+    getMyRequests,
+    getVolunteersForRequest,
+    updateVolunteerStatus
 } = require('../controllers/requestController');
 const {volunteerCreateRequest} = require('../controllers/volunteerRequestController');
 
@@ -23,5 +25,17 @@ router.get('/open', protect, checkRole(['volunteer']), getOpenRequests);
 router.post('/apply/:id', protect, checkRole(['volunteer']), applyToRequest);
 
 router.post('/volunteer/request', protect, checkRole(['volunteer']), volunteerCreateRequest);
+router.get(
+  "/:id/volunteers",
+  protect,
+  checkRole(["school"]),
+  getVolunteersForRequest
+);
+router.patch(
+  "/:requestId/volunteer/:volunteerId",
+  protect,
+  checkRole(["school"]),
+  updateVolunteerStatus
+);
 
 module.exports = router;

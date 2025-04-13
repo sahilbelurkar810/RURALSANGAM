@@ -6,6 +6,7 @@ const createVolunteer = async (req, res) => {
     try {
         const { name, email, phoneNumber, address, skills,dob,availability,contribution,acceptedSchool,education,requestedSchool } = req.body;
         const volunteerData = await volunteer.create({
+            userId: req.user.id,
             name,
             email,
             dob,
