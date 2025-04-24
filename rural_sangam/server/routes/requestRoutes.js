@@ -6,7 +6,12 @@ const {
     applyToRequest,
     getMyRequests,
     getVolunteersForRequest,
-    updateVolunteerStatus
+    updateVolunteerStatus,
+    getMyApplications,
+    updateRequest,
+    deleteRequest,
+    closeRequest,
+    withdrawApplication
 } = require('../controllers/requestController');
 const {volunteerCreateRequest} = require('../controllers/volunteerRequestController');
 
@@ -37,5 +42,10 @@ router.patch(
   checkRole(["school"]),
   updateVolunteerStatus
 );
+router.get("/volunteer/my-applications", protect, getMyApplications);
+router.put("/:id", protect, checkRole(["school"]), updateRequest);
+router.delete("/:id", protect, checkRole(["school"]), deleteRequest);
+router.patch("/:id/close", protect, checkRole(["school"]), closeRequest);
+router.patch("/:id/withdraw", protect, checkRole(["volunteer"]), withdrawApplication);
 
 module.exports = router;
