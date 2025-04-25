@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 
 const ProtectedRoute: React.FC = () => {
   const { user, isLoading } = useAuth();
@@ -14,7 +14,7 @@ const ProtectedRoute: React.FC = () => {
   }
 
   // After loading completes, redirect to login if not authenticated
-  if (!user) {
+  if (!user || !user.user) {
     return <Navigate to="/login" replace />;
   }
 

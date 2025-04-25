@@ -7,27 +7,29 @@ import React, {
 } from "react";
 import { checkAuthStatus, logoutUser } from "../services/authServices";
 
-// Define a basic type for the user object (adjust as needed based on your backend response)
-// Ensure this User type matches the actual structure returned by your /api/auth/me endpoint
+// Define basic user type
 export type User = {
   _id: string;
   name: string;
   email: string;
-  role: "volunteer" | "school"; // Or other roles you might have
-  // Add other relevant user fields like profile picture, etc.
+  role: "volunteer" | "school";
+};
+
+// Define the authenticated user structure with profile
+export type AuthUser = {
+  user: User;
+  profile: any | null; // Using 'any' to accommodate different profile structures
 };
 
 // Define the shape of the context data
-// Exporting this type so the useAuth hook can use it
 export interface AuthContextType {
-  user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  user: AuthUser | null;
+  setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
   isLoading: boolean;
   logout: () => Promise<void>;
 }
 
 // Create the context with a default undefined value
-// Exporting the context itself so the useAuth hook can access it
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined
 );
@@ -39,17 +41,17 @@ interface AuthProviderProps {
 
 // Create the AuthProvider component
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true); // Start loading
 
   // Check authentication status when the provider mounts
   useEffect(() => {
     const verifyUser = async () => {
       try {
-        const userData = await checkAuthStatus(); // Call the service
+        const userData: AuthUser = await checkAuthStatus(); // Call the service
         console.log(userData);
 
-        setUser(userData.user); // Set user data if successful
+        setUser(userData); // Now setting the entire object with user and profile
       } catch (error) {
         // If checkAuthStatus throws (e.g., 401), the user is not logged in
         setUser(null);
@@ -63,8 +65,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Logout function - only handles state and API call
   const logout = async () => {
-    // Don't necessarily need isLoading here unless logout takes significant time
-    // setIsLoading(true);
     try {
       await logoutUser(); // Call the service function
       setUser(null); // Clear user state
@@ -72,8 +72,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error("Logout failed:", error);
       // Rethrow or handle error if needed by the caller
       throw error; // Allow the caller (Navbar) to know if it failed
-    } finally {
-      // setIsLoading(false);
     }
   };
 
@@ -82,17 +80,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     setUser,
     isLoading,
-    logout, // Re-add logout to context value
+    logout,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
-
-// Helper hook for consuming the AuthContext
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 };

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, NavLink, useNavigate } from "react-router";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 
 export default function ProtectedNavbar() {
   const { user, logout } = useAuth();
@@ -13,13 +13,20 @@ export default function ProtectedNavbar() {
   }
 
   // Role-specific links
-  const roleSpecificLinks = user
-    ? user.role === "school"
-      ? [{ path: "/school-dashboard", label: "School Dashboard" }]
-      : user.role === "volunteer"
-      ? [{ path: "/volunteer-tasks", label: "My Tasks" }]
-      : []
-    : [];
+  const roleSpecificLinks =
+    user && user.user
+      ? user.user.role === "school"
+        ? [
+            { path: "/school/profile", label: "My Profile" },
+            { path: "/school-dashboard", label: "School Dashboard" },
+          ]
+        : user.user.role === "volunteer"
+        ? [
+            { path: "/volunteer/profile", label: "My Profile" },
+            { path: "/volunteer-tasks", label: "My Tasks" },
+          ]
+        : []
+      : [];
 
   const navLinks = [...baseLinks, ...roleSpecificLinks];
 
@@ -54,7 +61,9 @@ export default function ProtectedNavbar() {
         </ul>
       </div>
       <div className="flex items-center space-x-4">
-        {user && <span className="text-sm">Welcome, {user.name}!</span>}
+        {user && user.user && (
+          <span className="text-sm">Welcome, {user.user.name}!</span>
+        )}
         <button
           onClick={handleLogout}
           disabled={!user}

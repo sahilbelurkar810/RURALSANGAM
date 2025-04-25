@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { register } from "../services/authServices";
+import { register, checkAuthStatus } from "../services/authServices";
+import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +16,10 @@ const SignUp = () => {
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { setUser } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -52,12 +58,32 @@ const SignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await register({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-      role: formData.role,
-    });
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // First register the user
+      await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+      });
+
+      // Then fetch complete user data including profile
+      const userData = await checkAuthStatus();
+      console.log("Registration successful, setting user:", userData);
+      setUser(userData);
+      navigate("/home");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred during registration.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   React.useEffect(() => {
@@ -148,12 +174,13 @@ const SignUp = () => {
               </p>
             )}
           </div>
+          {error && <div className="mb-4 text-center text-error">{error}</div>}
           <button
             type="submit"
-            className="btn bg-accent hover:bg-neutral w-full cursor-pointer "
-            disabled={!isFormValid}
+            className="btn bg-accent hover:bg-neutral w-full cursor-pointer"
+            disabled={!isFormValid || isLoading}
           >
-            Sign Up
+            {isLoading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
         <p className="mt-4 text-center text-sm">

@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { login as loginService } from "../services/authServices";
+import {
+  login as loginService,
+  checkAuthStatus,
+} from "../services/authServices";
 import { useAuth } from "../hooks/useAuth";
-import { User } from "../context/AuthContext";
 import { useNavigate } from "react-router";
 
 const Login = () => {
@@ -24,20 +26,14 @@ const Login = () => {
     }
 
     try {
-      const responseData = await loginService({ email, password });
+      // First login with credentials
+      await loginService({ email, password });
 
-      if (responseData && responseData.user) {
-        const userData: User = responseData.user;
-        console.log("Login successful, setting user:", userData);
-        setUser(userData);
-        navigate("/dashboard");
-      } else {
-        console.error(
-          "Login successful, but user data missing in response:",
-          responseData
-        );
-        setError("Login failed: Unexpected response from server.");
-      }
+      // Then fetch complete user data including profile
+      const userData = await checkAuthStatus();
+      console.log("Login successful, setting user:", userData);
+      setUser(userData);
+      navigate("/home"); // Navigate to home instead of dashboard
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
