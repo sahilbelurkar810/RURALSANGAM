@@ -1,9 +1,59 @@
+import { useState } from "react";
+import { login as loginService } from "../services/authServices";
+import { useAuth } from "../hooks/useAuth";
+import { User } from "../context/AuthContext";
+import { useNavigate } from "react-router";
+
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { setUser } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    if (!email || !password) {
+      setError("Email and Password are required.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const responseData = await loginService({ email, password });
+
+      if (responseData && responseData.user) {
+        const userData: User = responseData.user;
+        console.log("Login successful, setting user:", userData);
+        setUser(userData);
+        navigate("/dashboard");
+      } else {
+        console.error(
+          "Login successful, but user data missing in response:",
+          responseData
+        );
+        setError("Login failed: Unexpected response from server.");
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred during login.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex h-full items-center justify-center ">
       <div className="bg-base-200 p-8 rounded shadow-md w-full max-w-md">
         <h2 className="text-3xl font-bold mb-6 text-center">Login</h2>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium">
               Email
@@ -13,16 +63,10 @@ const Login = () => {
               id="email"
               className="input input-bordered w-full"
               placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
             />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="role" className="block text-sm font-medium">
-              Role
-            </label>
-            <select id="role" className="select select-bordered w-full">
-              <option value="volunteer">Volunteer</option>
-              <option value="school">School</option>
-            </select>
           </div>
           <div className="mb-4">
             <label htmlFor="password" className="block text-sm font-medium">
@@ -33,6 +77,9 @@ const Login = () => {
               id="password"
               className="input input-bordered w-full"
               placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
             />
           </div>
           <div className="flex items-center justify-between mb-4">
@@ -47,11 +94,15 @@ const Login = () => {
               </label>
             </div>
           </div>
+          {error && <div className="mb-4 text-center text-error">{error}</div>}
           <button
             type="submit"
-            className="btn bg-accent hover:bg-neutral w-full"
+            className={`btn bg-accent hover:bg-neutral w-full ${
+              isLoading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={isLoading}
           >
-            Login
+            {isLoading ? "Logging in..." : "Login"}
           </button>
         </form>
         <p className="mt-4 text-center text-sm">

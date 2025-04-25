@@ -25,10 +25,10 @@ class Navbar extends React.Component {
               ></path>
             </svg>
           </button>
+          {/* Add public navigation links here if needed later */}
         </div>
       </nav>
     );
   }
 }
-
 export default Navbar;

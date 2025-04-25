@@ -1,40 +1,77 @@
 import axios from "axios";
 
-type register = {
+type RegisterCredentials = {
   name: string;
   email: string;
   password: string;
   role: string;
 };
 
-type login = {
+type LoginCredentials = {
   email: string;
   password: string;
 };
 
-const register = async (creds: register) => {
+export const register = async (creds: RegisterCredentials) => {
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_API_URL}/auth/register`,
-      creds
+      creds,
+      { withCredentials: true }
     );
-    console.log("Registration successful:", response.data);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(
-        "Error during registration:",
-        error.response?.data || error.message
-      );
-    } else {
-      console.error("Unexpected error:", error);
+      throw new Error(error.response?.data?.message || error.message);
     }
     throw error;
   }
 };
 
-const login = async (creds: login) => {
-  console.log("Logging in user...", creds);
+export const login = async (creds: LoginCredentials) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/auth/login`,
+      creds,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || error.message);
+    }
+    throw new Error("An unexpected error occurred during login.");
+  }
 };
 
-export { register, login };
+export const checkAuthStatus = async () => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}/auth/me`,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    // A 401 error means the user is not logged in (no valid cookie)
+    if (axios.isAxiosError(error) && error.response?.status !== 401) {
+      console.error(
+        "Error checking auth status:",
+        error.response?.data?.message || error.message
+      );
+    }
+    throw error;
+  }
+};
+
+export const logoutUser = async (): Promise<void> => {
+  try {
+    await axios.post(
+      `${import.meta.env.VITE_API_URL}/auth/logout`,
+      {},
+      { withCredentials: true }
+    );
+  } catch (error) {
+    console.error("Logout API call failed:", error);
+    throw error;
+  }
+};
