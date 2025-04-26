@@ -1,7 +1,7 @@
 import { BrowserRouter } from "react-router";
 import AppRoutes from "./routes";
 
-function LoginPage() {
+function App() {
   return (
     <BrowserRouter>
       <AppRoutes />
@@ -9,4 +9,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default App;

@@ -11,7 +11,7 @@ export interface VolunteerFormData {
   education: string;
   skills: string[];
   availability: string;
-  contribution: string;
+  contribution: string | null;
   requestedSchool?: string | null;
   acceptedSchool?: string | null;
 }

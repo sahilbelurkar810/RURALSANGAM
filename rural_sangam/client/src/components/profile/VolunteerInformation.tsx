@@ -30,81 +30,113 @@ const VolunteerInformation: React.FC<VolunteerInformationProps> = ({
 
   return (
     <>
-      <EditableField
-        label="Name"
-        value={formData.name}
-        name="name"
-        isEditing={isEditing || !hasProfile}
-        onEdit={handleFieldEdit}
-      />
+      {/* Personal Information Section */}
+      <div className="col-span-2">
+        <h2 className="text-xl font-semibold mb-4 text-accent-content border-b pb-2">
+          Personal Information
+        </h2>
+      </div>
 
-      <EditableField
-        label="Email"
-        value={formData.email}
-        name="email"
-        isEditing={isEditing || !hasProfile}
-        onEdit={handleFieldEdit}
-        disabled={true}
-      />
+      <div>
+        <EditableField
+          label="Name"
+          value={formData.name}
+          name="name"
+          isEditing={isEditing || !hasProfile}
+          onEdit={handleFieldEdit}
+        />
+      </div>
 
-      <EditableField
-        label="Date of Birth"
-        value={formData.dob}
-        name="dob"
-        isEditing={isEditing || !hasProfile}
-        onEdit={handleFieldEdit}
-        type="date"
-      />
+      <div>
+        <EditableField
+          label="Email"
+          value={formData.email}
+          name="email"
+          isEditing={isEditing || !hasProfile}
+          onEdit={handleFieldEdit}
+          disabled={true}
+        />
+      </div>
 
-      <EditableField
-        label="Phone Number"
-        value={formData.phoneNumber}
-        name="phoneNumber"
-        isEditing={isEditing || !hasProfile}
-        onEdit={handleFieldEdit}
-      />
+      <div>
+        <EditableField
+          label="Date of Birth"
+          value={formData.dob}
+          name="dob"
+          isEditing={isEditing || !hasProfile}
+          onEdit={handleFieldEdit}
+          type="date"
+        />
+      </div>
 
-      <EditableField
-        label="Address"
-        value={formData.address}
-        name="address"
-        isEditing={isEditing || !hasProfile}
-        onEdit={handleFieldEdit}
-        multiline={true}
-      />
+      <div>
+        <EditableField
+          label="Phone Number"
+          value={formData.phoneNumber}
+          name="phoneNumber"
+          isEditing={isEditing || !hasProfile}
+          onEdit={handleFieldEdit}
+        />
+      </div>
 
-      <EditableField
-        label="Education"
-        value={formData.education}
-        name="education"
-        isEditing={isEditing || !hasProfile}
-        onEdit={handleFieldEdit}
-      />
+      <div className="col-span-2">
+        <EditableField
+          label="Address"
+          value={formData.address}
+          name="address"
+          isEditing={isEditing || !hasProfile}
+          onEdit={handleFieldEdit}
+          multiline={true}
+        />
+      </div>
 
-      <EditableSkills
-        skills={formData.skills}
-        isEditing={isEditing || !hasProfile}
-        onEdit={handleSkillsEdit}
-      />
+      {/* Professional Information Section */}
+      <div className="col-span-2 mt-6">
+        <h2 className="text-xl font-semibold mb-4 text-accent-content border-b pb-2">
+          Other Information
+        </h2>
+      </div>
 
-      <EditableSelect
-        label="Availability"
-        value={formData.availability}
-        name="availability"
-        options={availabilityOptions}
-        isEditing={isEditing || !hasProfile}
-        onEdit={handleFieldEdit}
-      />
+      <div>
+        <EditableField
+          label="Education"
+          value={formData.education}
+          name="education"
+          isEditing={isEditing || !hasProfile}
+          onEdit={handleFieldEdit}
+        />
+      </div>
 
-      <EditableField
-        label="Contribution"
-        value={formData.contribution}
-        name="contribution"
-        isEditing={isEditing || !hasProfile}
-        onEdit={handleFieldEdit}
-        multiline={true}
-        required={false}
-      />
+      <div>
+        <EditableSelect
+          label="Availability"
+          value={formData.availability}
+          name="availability"
+          options={availabilityOptions}
+          isEditing={isEditing || !hasProfile}
+          onEdit={handleFieldEdit}
+        />
+      </div>
+
+      <div className="col-span-2">
+        <EditableSkills
+          skills={formData.skills}
+          isEditing={isEditing || !hasProfile}
+          onEdit={handleSkillsEdit}
+        />
+      </div>
+
+      <div className="col-span-2">
+        <EditableField
+          label="Contribution"
+          value={formData.contribution || ""}
+          name="contribution"
+          isEditing={isEditing || !hasProfile}
+          onEdit={handleFieldEdit}
+          multiline={true}
+          required={false}
+        />
+      </div>
     </>
   );
 };

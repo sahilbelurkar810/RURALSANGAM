@@ -9,7 +9,7 @@ const Home = () => {
       <h1 className="text-3xl font-bold mb-6">Welcome to RuralSangam</h1>
 
       {/* Welcome message and instructions */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className="bg-accent rounded-lg shadow-md p-6 mb-6">
         <h2 className="text-xl font-semibold mb-3">Getting Started</h2>
         <p className="mb-4">
           Thank you for joining RuralSangam, where schools and volunteers

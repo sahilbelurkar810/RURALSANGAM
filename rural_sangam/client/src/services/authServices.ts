@@ -1,4 +1,5 @@
 import axios from "axios";
+import { handleApiError, logError } from "../utils/errorHandling";
 
 type RegisterCredentials = {
   name: string;
@@ -21,10 +22,8 @@ export const register = async (creds: RegisterCredentials) => {
     );
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.message || error.message);
-    }
-    throw error;
+    logError("Registration failed", error);
+    throw new Error(handleApiError(error, "Registration failed"));
   }
 };
 
@@ -37,10 +36,8 @@ export const login = async (creds: LoginCredentials) => {
     );
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.message || error.message);
-    }
-    throw new Error("An unexpected error occurred during login.");
+    logError("Login failed", error);
+    throw new Error(handleApiError(error, "Login failed"));
   }
 };
 
@@ -53,12 +50,12 @@ export const checkAuthStatus = async () => {
     return response.data;
   } catch (error) {
     // A 401 error means the user is not logged in (no valid cookie)
-    if (axios.isAxiosError(error) && error.response?.status !== 401) {
-      console.error(
-        "Error checking auth status:",
-        error.response?.data?.message || error.message
-      );
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      // Don't log 401s as they're expected when not logged in
+      throw error;
     }
+
+    logError("Auth status check failed", error);
     throw error;
   }
 };
@@ -71,7 +68,7 @@ export const logoutUser = async (): Promise<void> => {
       { withCredentials: true }
     );
   } catch (error) {
-    console.error("Logout API call failed:", error);
+    logError("Logout failed", error);
     throw error;
   }
 };

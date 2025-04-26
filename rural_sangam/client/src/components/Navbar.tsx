@@ -3,7 +3,7 @@ import React from "react";
 class Navbar extends React.Component {
   render() {
     return (
-      <nav className="bg-neutral  shadow-md">
+      <nav className="bg-neutral  shadow-md px-[80px]">
         <div className="container mx-auto p-4 flex justify-between items-center">
           <div className="text-3xl font-bold ">RuralSangam</div>
           <button

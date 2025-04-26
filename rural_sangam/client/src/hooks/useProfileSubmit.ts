@@ -1,8 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "./useAuth";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { VolunteerFormData, SchoolFormData } from "./useProfileForm";
+import { handleApiError, logError } from "../utils/errorHandling";
+
+// Debug utility that only logs in development mode
+const debug = (message: string, data?: any) => {
+  if (import.meta.env.DEV) {
+    console.log(`[Debug] ${message}`, data);
+  }
+};
 
 // Custom type guard to check if form data is for a volunteer
 function isVolunteerFormData(data: any): data is VolunteerFormData {
@@ -35,21 +43,9 @@ export function useProfileSubmit() {
 
       const method = user?.profile ? "put" : "post";
 
-      console.log(`Submitting to ${url}`, formData);
-      console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
-      console.log("Current user:", user);
-      console.log("User role:", user?.user?.role);
-      console.log("Profile type:", profileType);
+      debug(`Submitting to ${url}`, { formData, profileType });
 
       if (profileType === "volunteer" && isVolunteerFormData(formData)) {
-        console.log("Checking volunteer data:");
-        console.log("- DOB:", formData.dob, typeof formData.dob);
-        console.log(
-          "- Skills:",
-          formData.skills,
-          Array.isArray(formData.skills)
-        );
-
         // Ensure skills is an array
         if (!Array.isArray(formData.skills)) {
           formData.skills = [];
@@ -63,7 +59,7 @@ export function useProfileSubmit() {
         withCredentials: true,
       });
 
-      console.log("Server response:", response.data);
+      debug("Server response received", response.data);
 
       // Update the user context with the new profile
       if (user) {
@@ -72,8 +68,6 @@ export function useProfileSubmit() {
           profileType === "volunteer"
             ? response.data.volunteerData || response.data
             : response.data.schoolData || response.data;
-
-        console.log("Setting user profile to:", profileData);
 
         setUser({
           ...user,
@@ -93,43 +87,8 @@ export function useProfileSubmit() {
 
       return response.data;
     } catch (err) {
-      console.error("Profile submission error:", err);
-
-      if (axios.isAxiosError(err)) {
-        const axiosError = err as AxiosError;
-        console.log("Axios error details:", {
-          status: axiosError.response?.status,
-          statusText: axiosError.response?.statusText,
-          data: axiosError.response?.data,
-        });
-
-        if (axiosError.response) {
-          // Server responded with an error
-          const serverError = axiosError.response.data as any;
-          const errorMessage =
-            serverError.message ||
-            serverError.msg ||
-            `Server error (${axiosError.response.status}): ${JSON.stringify(
-              serverError
-            )}`;
-
-          setError(errorMessage);
-          console.error("Server error details:", serverError);
-        } else if (axiosError.request) {
-          // Request was made but no response
-          setError(
-            "No response received from server. Please check your connection."
-          );
-        } else {
-          // Something else happened
-          setError(axiosError.message || "An unknown error occurred");
-        }
-      } else if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unknown error occurred");
-      }
-
+      logError("Profile submission error", err);
+      setError(handleApiError(err));
       throw err;
     } finally {
       setLoading(false);
