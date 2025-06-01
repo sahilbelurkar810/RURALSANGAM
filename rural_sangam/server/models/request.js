@@ -42,9 +42,28 @@ const requestSchema = new mongoose.Schema(
         },
       },
     ],
+    collaborations: [
+      {
+        volunteer: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Volunteer",
+        },
+        roomName: {
+          type: String,
+        },
+      },
+    ],
     isOpen: {
       type: Boolean,
       default: true,
+    },
+    closedAt: {
+      type: Date,
+      default: null,
+    },
+    isCompleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {

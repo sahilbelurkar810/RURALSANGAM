@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['volunteer', 'school'],
+        enum: ['admin','volunteer', 'school'],
         required: true,
     },
     isProfileComplete: {
