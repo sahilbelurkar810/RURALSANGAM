@@ -211,22 +211,7 @@ const updateVolunteerStatus = async (req, res) => {
         ) {
           request.isOpen = false;
         }
-         if (status === "accepted") {
-           // Check if collaboration already exists
-           const existingCollab = request.collaborations.find(
-             (c) => c.volunteer.toString() === req.params.volunteerId
-           );
 
-           if (!existingCollab) {
-             // Generate a unique room name (simple format: requestId-volunteerId)
-             const roomName = `${request._id}-${req.params.volunteerId}`;
-
-             request.collaborations.push({
-               volunteer: req.params.volunteerId,
-               roomName,
-             });
-           }
-         }
         await request.save();
 
         await sendNotification({
@@ -241,60 +226,6 @@ const updateVolunteerStatus = async (req, res) => {
         res.status(500).json({ msg: err.message });
     }
 };
-
-const getCollaborationRoom = async (req, res) => {
-  try {
-    const { requestId, volunteerId } = req.params;
-
-    const request = await Request.findById(requestId)
-      .populate("school", "name userId")
-      .populate("volunteers.volunteer", "fullName userId");
-
-    if (!request) {
-      return res.status(404).json({ msg: "Request not found" });
-    }
-
-    const volunteerEntry = request.volunteers.find(
-      (v) =>
-        v.volunteer._id.toString() === volunteerId && v.status === "accepted"
-    );
-
-    if (!volunteerEntry) {
-      return res
-        .status(403)
-        .json({ msg: "Volunteer not accepted for this request" });
-    }
-
-    // Check if logged-in user is school OR accepted volunteer
-    const isSchool = request.school.userId.toString() === req.user.id;
-    const isVolunteer =
-      volunteerEntry.volunteer.userId.toString() === req.user.id;
-
-    if (!isSchool && !isVolunteer) {
-      return res.status(403).json({ msg: "Access denied" });
-    }
-
-    const collaboration = request.collaborations.find(
-      (c) => c.volunteer.toString() === volunteerId
-    );
-
-    if (!collaboration) {
-      return res.status(404).json({ msg: "Collaboration room not found" });
-    }
-
-    res.json({
-      requestId,
-      volunteerId,
-      schoolName: request.school.name,
-      volunteerName: volunteerEntry.volunteer.fullName,
-      roomName: collaboration.roomName,
-      jaasAppId: process.env.JAAS_APP_ID,
-    });
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-  }
-};
-
 
 const getMyApplications = async (req, res) => {
   try {
@@ -478,43 +409,6 @@ const withdrawApplication = async (req, res) => {
   }
 };
 
-const getAcceptedRequestsForVolunteer = async (req, res) => {
-  try {
-    const volunteer = await Volunteer.findOne({ userId: req.user.id });
-    if (!volunteer) {
-      return res.status(404).json({ msg: "Volunteer not found" });
-    }
-
-    const requests = await Request.find({
-      "volunteers.volunteer": volunteer._id,
-      "volunteers.status": "accepted",
-    }).populate("school", "schoolName location");
-
-    res.json(requests);
-  } catch (err) {
-    res.status(500).json({ msg: "Server error", error: err.message });
-  }
-};
-
-const markRequestCompleted = async (req, res) => {
-  try {
-    const request = await Request.findById(req.params.id);
-
-    const school = await School.findOne({ userId: req.user.id });
-    if (!school || request.school.toString() !== school._id.toString()) {
-      return res.status(403).json({ msg: "Not authorized" });
-    }
-
-    request.isCompleted = true;
-    request.isOpen = false;
-    await request.save();
-
-    res.json({ msg: "Request marked as completed" });
-  } catch (err) {
-    res.status(500).json({ msg: "Server error", error: err.message });
-  }
-};
-
 
 module.exports = {
     createRequest,
@@ -527,8 +421,5 @@ module.exports = {
     updateRequest,
     deleteRequest,
     closeRequest,
-    withdrawApplication,
-    getAcceptedRequestsForVolunteer,
-    markRequestCompleted,
-    getCollaborationRoom
+    withdrawApplication
 };

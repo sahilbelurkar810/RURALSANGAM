@@ -11,10 +11,7 @@ const {
     updateRequest,
     deleteRequest,
     closeRequest,
-    withdrawApplication,
-    getAcceptedRequestsForVolunteer,
-    markRequestCompleted,
-    getCollaborationRoom
+    withdrawApplication
 } = require('../controllers/requestController');
 const {volunteerCreateRequest} = require('../controllers/volunteerRequestController');
 
@@ -50,7 +47,5 @@ router.put("/:id", protect, checkRole(["school"]), updateRequest);
 router.delete("/:id", protect, checkRole(["school"]), deleteRequest);
 router.patch("/:id/close", protect, checkRole(["school"]), closeRequest);
 router.patch("/:id/withdraw", protect, checkRole(["volunteer"]), withdrawApplication);
-router.get("/volunteer/accepted", protect, checkRole(["volunteer"]), getAcceptedRequestsForVolunteer);
-router.patch("/:id/completed", protect, checkRole(["school"]), markRequestCompleted);
-router.get("/:id/collaboration/:volunteerId", protect, getCollaborationRoom);
+
 module.exports = router;

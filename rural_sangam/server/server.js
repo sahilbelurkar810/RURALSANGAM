@@ -7,9 +7,6 @@ const volunteerRoutes = require('./routes/volunteerRoutes.js');
 const schoolRoutes = require('./routes/schoolRoutes.js');
 const requestRoutes = require('./routes/requestRoutes.js');
 const notificationRoutes = require('./routes/notificationRoutes.js');
-const messageRoutes = require('./routes/messageRoutes.js');
-const adminRoutes = require('./routes/adminRoutes.js');
-// const collab = require('./routes/colllabRoutes.js');
 const connectDB = require('./config/db');
 
 
@@ -29,9 +26,6 @@ app.use('/api/volunteer', volunteerRoutes);
 app.use('/api/school', schoolRoutes);
 app.use('/api/request', requestRoutes);
 app.use('/api/notifications', notificationRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/admin', adminRoutes);
-// app.use('/api/collab', collab);
 
 app.use((req, res) => {
     console.log(`Unhandled route: ${req.method} ${req.originalUrl}`);
