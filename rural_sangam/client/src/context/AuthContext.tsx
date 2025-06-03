@@ -49,7 +49,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const verifyUser = async () => {
       try {
         const userData: AuthUser = await checkAuthStatus(); // Call the service
-        console.log(userData);
+        console.log("Auth data received:", userData);
+        console.log("User role:", userData?.user?.role);
+        console.log("User profile:", userData?.profile);
+
+        if (userData?.user?.role === "school" && userData?.profile) {
+          console.log("School profile ID:", userData.profile._id);
+          console.log("School profile data:", userData.profile);
+        }
 
         setUser(userData); // Now setting the entire object with user and profile
       } catch (error) {

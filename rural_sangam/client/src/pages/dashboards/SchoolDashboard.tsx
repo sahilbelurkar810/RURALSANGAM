@@ -25,9 +25,11 @@ const SchoolDashboard: React.FC = () => {
         // Calculate statistics
         const totalRequests = requestsData?.length || 0;
         const activeRequests =
-          requestsData?.filter(
-            (r) => (r.volunteers?.length || 0) < r.requiredVolunteers
-          ).length || 0;
+          requestsData?.filter((r) => {
+            const acceptedVolunteers =
+              r.volunteers?.filter((v) => v.status === "accepted").length || 0;
+            return acceptedVolunteers < r.requiredVolunteers;
+          }).length || 0;
         const totalApplications =
           requestsData?.reduce(
             (sum, r) => sum + (r.volunteers?.length || 0),
@@ -239,22 +241,32 @@ const SchoolDashboard: React.FC = () => {
                         </p>
                       </div>
                       <Badge
-                        variant={
-                          (request.volunteers?.length || 0) >=
-                          request.requiredVolunteers
+                        variant={(() => {
+                          const acceptedVolunteers =
+                            request.volunteers?.filter(
+                              (v) => v.status === "accepted"
+                            ).length || 0;
+                          return acceptedVolunteers >=
+                            request.requiredVolunteers
                             ? "success"
-                            : (request.volunteers?.length || 0) > 0
+                            : acceptedVolunteers > 0
                             ? "warning"
-                            : "info"
-                        }
+                            : "info";
+                        })()}
                         size="sm"
                       >
-                        {(request.volunteers?.length || 0) >=
-                        request.requiredVolunteers
-                          ? "Filled"
-                          : (request.volunteers?.length || 0) > 0
-                          ? "Partial"
-                          : "Open"}
+                        {(() => {
+                          const acceptedVolunteers =
+                            request.volunteers?.filter(
+                              (v) => v.status === "accepted"
+                            ).length || 0;
+                          return acceptedVolunteers >=
+                            request.requiredVolunteers
+                            ? "Filled"
+                            : acceptedVolunteers > 0
+                            ? "Partial"
+                            : "Open";
+                        })()}
                       </Badge>
                     </div>
                   </div>

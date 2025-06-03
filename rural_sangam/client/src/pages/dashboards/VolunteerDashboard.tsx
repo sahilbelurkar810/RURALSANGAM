@@ -22,22 +22,29 @@ const VolunteerDashboard: React.FC = () => {
         const requestsData = await getOpenRequests();
         setRequests(requestsData || []);
 
-        // Calculate statistics
-        const totalOpportunities = requestsData?.length || 0;
+        // Calculate statistics - only count truly available opportunities
+        const totalOpportunities =
+          requestsData?.filter((r) => {
+            const acceptedVolunteers =
+              r.volunteers?.filter((v) => v.status === "accepted").length || 0;
+            return acceptedVolunteers < r.requiredVolunteers;
+          }).length || 0;
         const myApplications =
           requestsData?.filter((r) =>
-            r.volunteers?.some((v) => v.volunteer === user?.user?._id)
+            r.volunteers?.some((v) => v.volunteer === user?.profile?._id)
           ).length || 0;
         const acceptedApplications =
           requestsData?.filter((r) =>
             r.volunteers?.some(
-              (v) => v.volunteer === user?.user?._id && v.status === "accepted"
+              (v) =>
+                v.volunteer === user?.profile?._id && v.status === "accepted"
             )
           ).length || 0;
         const pendingApplications =
           requestsData?.filter((r) =>
             r.volunteers?.some(
-              (v) => v.volunteer === user?.user?._id && v.status === "pending"
+              (v) =>
+                v.volunteer === user?.profile?._id && v.status === "pending"
             )
           ).length || 0;
 
@@ -231,7 +238,7 @@ const VolunteerDashboard: React.FC = () => {
                   .filter(
                     (r) =>
                       !r.volunteers?.some(
-                        (v) => v.volunteer === user?.user?._id
+                        (v) => v.volunteer === user?.profile?._id
                       )
                   )
                   .slice(0, 3)
@@ -250,25 +257,37 @@ const VolunteerDashboard: React.FC = () => {
                           </p>
                         </div>
                         <Badge
-                          variant={
-                            (request.volunteers?.length || 0) >=
-                            request.requiredVolunteers
+                          variant={(() => {
+                            const acceptedVolunteers =
+                              request.volunteers?.filter(
+                                (v) => v.status === "accepted"
+                              ).length || 0;
+                            return acceptedVolunteers >=
+                              request.requiredVolunteers
                               ? "success"
-                              : "info"
-                          }
+                              : "info";
+                          })()}
                           size="sm"
                         >
-                          {(request.volunteers?.length || 0) >=
-                          request.requiredVolunteers
-                            ? "Filled"
-                            : "Open"}
+                          {(() => {
+                            const acceptedVolunteers =
+                              request.volunteers?.filter(
+                                (v) => v.status === "accepted"
+                              ).length || 0;
+                            return acceptedVolunteers >=
+                              request.requiredVolunteers
+                              ? "Filled"
+                              : "Open";
+                          })()}
                         </Badge>
                       </div>
                     </div>
                   ))}
                 {requests.filter(
                   (r) =>
-                    !r.volunteers?.some((v) => v.volunteer === user?.user?._id)
+                    !r.volunteers?.some(
+                      (v) => v.volunteer === user?.profile?._id
+                    )
                 ).length > 3 && (
                   <div className="text-center pt-2">
                     <Link
@@ -301,12 +320,14 @@ const VolunteerDashboard: React.FC = () => {
               <>
                 {requests
                   .filter((r) =>
-                    r.volunteers?.some((v) => v.volunteer === user?.user?._id)
+                    r.volunteers?.some(
+                      (v) => v.volunteer === user?.profile?._id
+                    )
                   )
                   .slice(0, 3)
                   .map((request) => {
                     const myApplication = request.volunteers?.find(
-                      (v) => v.volunteer === user?.user?._id
+                      (v) => v.volunteer === user?.profile?._id
                     );
                     return (
                       <div
@@ -321,9 +342,11 @@ const VolunteerDashboard: React.FC = () => {
                             </h4>
                             <p className="text-xs text-gray-500 mt-1">
                               Applied{" "}
-                              {new Date(
-                                myApplication?.appliedAt || ""
-                              ).toLocaleDateString()}
+                              {myApplication?.appliedAt
+                                ? new Date(
+                                    myApplication.appliedAt
+                                  ).toLocaleDateString()
+                                : "recently"}
                             </p>
                           </div>
                           <Badge

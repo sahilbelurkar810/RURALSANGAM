@@ -38,11 +38,15 @@ export type VolunteerApplication = {
 // School creates request
 export const createRequest = async (requestData: CreateRequestData) => {
   try {
+    console.log("Creating request with data:", requestData);
     const response = await axios.post(`${API_BASE}/request`, requestData, {
       withCredentials: true,
     });
+    console.log("Request created successfully:", response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
+    console.error("Error creating request:", error);
+    console.error("Error response:", error.response?.data);
     logError("Create request failed", error);
     throw new Error(handleApiError(error, "Failed to create request"));
   }
@@ -115,14 +119,19 @@ export const volunteerCreateRequest = async (
 // School gets volunteers for a specific request
 export const getVolunteersForRequest = async (requestId: string) => {
   try {
+    console.log("Making API call to get volunteers for request:", requestId);
     const response = await axios.get(
       `${API_BASE}/request/${requestId}/volunteers`,
       {
         withCredentials: true,
       }
     );
+    console.log("API response for getVolunteersForRequest:", response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
+    console.error("API error in getVolunteersForRequest:", error);
+    console.error("Error response data:", error.response?.data);
+    console.error("Error status:", error.response?.status);
     logError("Get volunteers for request failed", error);
     throw new Error(
       handleApiError(error, "Failed to get volunteers for request")

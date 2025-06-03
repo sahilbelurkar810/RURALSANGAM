@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router';
-import { Card, Button, Badge, LoadingSpinner } from '../../components/common';
-import { getOpenRequests, applyToRequest, RequestData } from '../../services';
-import { useAuth } from '../../hooks/useAuth';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router";
+import { Card, Button, Badge, LoadingSpinner } from "../../components/common";
+import { getOpenRequests, applyToRequest, RequestData } from "../../services";
+import { useAuth } from "../../hooks/useAuth";
 
 const VolunteerRequestsView: React.FC = () => {
   const { user } = useAuth();
@@ -18,8 +18,8 @@ const VolunteerRequestsView: React.FC = () => {
         const data = await getOpenRequests();
         setRequests(data || []);
       } catch (err) {
-        setError('Failed to load available opportunities');
-        console.error('Error fetching volunteer requests:', err);
+        setError("Failed to load available opportunities");
+        console.error("Error fetching volunteer requests:", err);
       } finally {
         setLoading(false);
       }
@@ -32,27 +32,27 @@ const VolunteerRequestsView: React.FC = () => {
     try {
       setApplyingTo(requestId);
       await applyToRequest(requestId);
-      
+
       // Update the local state to reflect the application
-      setRequests(prev => 
-        prev.map(request => 
-          request._id === requestId 
+      setRequests((prev) =>
+        prev.map((request) =>
+          request._id === requestId
             ? {
                 ...request,
                 volunteers: [
                   ...(request.volunteers || []),
                   {
-                    volunteer: user?.user?._id || '',
-                    status: 'pending' as const,
-                    appliedAt: new Date().toISOString()
-                  }
-                ]
+                    volunteer: user?.profile?._id || "",
+                    status: "pending" as const,
+                    appliedAt: new Date().toISOString(),
+                  },
+                ],
               }
             : request
         )
       );
     } catch (error) {
-      console.error('Failed to apply:', error);
+      console.error("Failed to apply:", error);
       // Show error message
     } finally {
       setApplyingTo(null);
@@ -60,12 +60,14 @@ const VolunteerRequestsView: React.FC = () => {
   };
 
   const getStatusBadge = (request: RequestData) => {
-    const volunteerCount = request.volunteers?.length || 0;
+    // Count only accepted volunteers, not all applications
+    const acceptedVolunteers =
+      request.volunteers?.filter((v) => v.status === "accepted").length || 0;
     const requiredCount = request.requiredVolunteers;
-    
-    if (volunteerCount >= requiredCount) {
+
+    if (acceptedVolunteers >= requiredCount) {
       return <Badge variant="success">Filled</Badge>;
-    } else if (volunteerCount > 0) {
+    } else if (acceptedVolunteers > 0) {
       return <Badge variant="warning">Partially Filled</Badge>;
     } else {
       return <Badge variant="info">Open</Badge>;
@@ -73,11 +75,13 @@ const VolunteerRequestsView: React.FC = () => {
   };
 
   const hasApplied = (request: RequestData) => {
-    return request.volunteers?.some(v => v.volunteer === user?.user?._id);
+    return request.volunteers?.some((v) => v.volunteer === user?.profile?._id);
   };
 
   const getApplicationStatus = (request: RequestData) => {
-    const application = request.volunteers?.find(v => v.volunteer === user?.user?._id);
+    const application = request.volunteers?.find(
+      (v) => v.volunteer === user?.profile?._id
+    );
     return application?.status;
   };
 
@@ -116,8 +120,18 @@ const VolunteerRequestsView: React.FC = () => {
       {requests.length === 0 ? (
         <Card>
           <div className="text-center py-12">
-            <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              className="w-12 h-12 text-gray-400 mx-auto mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               No opportunities available
@@ -132,8 +146,11 @@ const VolunteerRequestsView: React.FC = () => {
           {requests.map((request) => {
             const applied = hasApplied(request);
             const applicationStatus = getApplicationStatus(request);
-            const isFilled = (request.volunteers?.length || 0) >= request.requiredVolunteers;
-            
+            const acceptedVolunteers =
+              request.volunteers?.filter((v) => v.status === "accepted")
+                .length || 0;
+            const isFilled = acceptedVolunteers >= request.requiredVolunteers;
+
             return (
               <Card key={request._id}>
                 <div className="flex justify-between items-start mb-4">
@@ -141,42 +158,51 @@ const VolunteerRequestsView: React.FC = () => {
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-lg font-semibold text-gray-900">
                         {request.requirementDescription.substring(0, 100)}
-                        {request.requirementDescription.length > 100 && '...'}
+                        {request.requirementDescription.length > 100 && "..."}
                       </h3>
                       {getStatusBadge(request)}
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 mb-4">
                       <div>
-                        <span className="font-medium">Volunteers needed:</span> {request.requiredVolunteers}
+                        <span className="font-medium">Volunteers needed:</span>{" "}
+                        {request.requiredVolunteers}
                       </div>
                       <div>
-                        <span className="font-medium">Duration:</span> {request.duration}
+                        <span className="font-medium">Duration:</span>{" "}
+                        {request.duration}
                       </div>
                       <div>
-                        <span className="font-medium">Timings:</span> {request.timings}
+                        <span className="font-medium">Timings:</span>{" "}
+                        {request.timings}
                       </div>
                     </div>
 
-                    {request.requiredSkills && request.requiredSkills.length > 0 && (
-                      <div className="mb-4">
-                        <span className="text-sm font-medium text-gray-700 mr-2">Required Skills:</span>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {request.requiredSkills.map((skill, index) => (
-                            <Badge key={index} variant="default" size="sm">
-                              {skill}
-                            </Badge>
-                          ))}
+                    {request.requiredSkills &&
+                      request.requiredSkills.length > 0 && (
+                        <div className="mb-4">
+                          <span className="text-sm font-medium text-gray-700 mr-2">
+                            Required Skills:
+                          </span>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {request.requiredSkills.map((skill, index) => (
+                              <Badge key={index} variant="default" size="sm">
+                                {skill}
+                              </Badge>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {applied && (
                       <div className="mb-4">
-                        <Badge 
+                        <Badge
                           variant={
-                            applicationStatus === 'accepted' ? 'success' : 
-                            applicationStatus === 'rejected' ? 'danger' : 'warning'
+                            applicationStatus === "accepted"
+                              ? "success"
+                              : applicationStatus === "rejected"
+                              ? "danger"
+                              : "warning"
                           }
                         >
                           Application {applicationStatus}
@@ -189,17 +215,19 @@ const VolunteerRequestsView: React.FC = () => {
                 <div className="flex justify-between items-center pt-4 border-t border-gray-200">
                   <div className="text-sm text-gray-500">
                     {request.volunteers && request.volunteers.length > 0 && (
-                      <span>{request.volunteers.length} volunteer(s) applied</span>
+                      <span>
+                        {request.volunteers.length} volunteer(s) applied
+                      </span>
                     )}
                   </div>
-                  
+
                   <div className="flex gap-2">
                     <Link to={`/volunteer/requests/${request._id}`}>
                       <Button variant="outline" size="sm">
                         View Details
                       </Button>
                     </Link>
-                    
+
                     {!applied && !isFilled && (
                       <Button
                         variant="primary"
@@ -211,13 +239,13 @@ const VolunteerRequestsView: React.FC = () => {
                         Apply Now
                       </Button>
                     )}
-                    
+
                     {applied && (
                       <Button variant="outline" size="sm" disabled>
                         Applied
                       </Button>
                     )}
-                    
+
                     {isFilled && !applied && (
                       <Button variant="outline" size="sm" disabled>
                         Position Filled
