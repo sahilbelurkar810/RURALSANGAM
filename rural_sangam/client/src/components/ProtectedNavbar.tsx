@@ -1,21 +1,37 @@
 import React from "react";
 import { Link, NavLink, useNavigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
+import { useNotifications } from "../hooks/useNotifications";
 
 export default function ProtectedNavbar() {
   const { user, logout } = useAuth();
+  const { unreadCount } = useNotifications();
   const navigate = useNavigate();
 
   // Base links available to all users
-  const baseLinks = [{ path: "/home", label: "Home" }];
+  const baseLinks = [
+    { path: "/home", label: "Home" },
+    {
+      path: "/notifications",
+      label: "Notifications",
+      badge: unreadCount > 0 ? unreadCount : undefined,
+    },
+  ];
 
-  // Role-specific links (excluding profile)
+  // Role-specific links
   const roleSpecificLinks =
     user && user.user
       ? user.user.role === "school"
-        ? [{ path: "/school-dashboard", label: "School Dashboard" }]
+        ? [
+            { path: "/school/dashboard", label: "Dashboard" },
+            { path: "/school/requests", label: "My Requests" },
+            { path: "/school/requests/create", label: "Create Request" },
+          ]
         : user.user.role === "volunteer"
-        ? [{ path: "/volunteer-tasks", label: "My Tasks" }]
+        ? [
+            { path: "/volunteer/dashboard", label: "Dashboard" },
+            { path: "/volunteer/requests", label: "Browse Requests" },
+          ]
         : []
       : [];
 
@@ -52,12 +68,17 @@ export default function ProtectedNavbar() {
                 <NavLink
                   to={link.path}
                   className={({ isActive }: { isActive: boolean }) =>
-                    `hover:text-gray-300 ${
+                    `hover:text-gray-300 relative ${
                       isActive ? "font-bold text-yellow-300" : ""
                     }`
                   }
                 >
                   {link.label}
+                  {link.badge && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {link.badge > 99 ? "99+" : link.badge}
+                    </span>
+                  )}
                 </NavLink>
               </li>
             ))}

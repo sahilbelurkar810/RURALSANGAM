@@ -1,8 +1,17 @@
 import { useAuth } from "../hooks/useAuth";
-import { Link } from "react-router";
+import { Link, Navigate } from "react-router";
 
 const Home = () => {
   const { user } = useAuth();
+
+  // Redirect users with profiles to their dashboards
+  if (user && user.user && user.profile) {
+    if (user.user.role === "school") {
+      return <Navigate to="/school/dashboard" replace />;
+    } else if (user.user.role === "volunteer") {
+      return <Navigate to="/volunteer/dashboard" replace />;
+    }
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-6">
