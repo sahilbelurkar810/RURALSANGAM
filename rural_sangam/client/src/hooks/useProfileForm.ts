@@ -11,7 +11,6 @@ export interface VolunteerFormData {
   education: string;
   skills: string[];
   availability: string;
-  contribution: string | null;
   requestedSchool?: string | null;
   acceptedSchool?: string | null;
 }
@@ -59,7 +58,6 @@ export function useProfileForm<T extends "volunteer" | "school">(
           education: user?.profile?.education || "",
           skills: user?.profile?.skills || [],
           availability: user?.profile?.availability || "",
-          contribution: user?.profile?.contribution || "",
           requestedSchool: user?.profile?.requestedSchool || null,
           acceptedSchool: user?.profile?.acceptedSchool || null,
         } as ProfileFormData<T>);

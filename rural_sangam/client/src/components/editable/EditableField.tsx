@@ -50,25 +50,39 @@ const EditableField: React.FC<EditableFieldProps> = ({
       type === "date" && value ? new Date(value).toLocaleDateString() : value;
 
     return (
-      <div className="mb-6">
-        <h2 className="text-lg font-medium">{label}</h2>
-        <div className="flex items-center justify-between">
-          <p className="opacity-80">{displayValue || "Not specified"}</p>
-          {isEditing && !disabled && (
-            <button
-              onClick={() => setIsFieldEditing(true)}
-              className="text-primary hover:text-primary-focus"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+      <div className="mb-4">
+        <div className="bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors duration-200 group">
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+              {label}
+            </h3>
+            {isEditing && !disabled && (
+              <button
+                onClick={() => setIsFieldEditing(true)}
+                className="opacity-0 group-hover:opacity-100 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-all duration-200"
+                title={`Edit ${label}`}
               >
-                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-              </svg>
-            </button>
-          )}
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
+          <p className="text-gray-900 font-medium">
+            {displayValue || (
+              <span className="text-gray-400 italic">Not specified</span>
+            )}
+          </p>
         </div>
       </div>
     );
@@ -76,34 +90,77 @@ const EditableField: React.FC<EditableFieldProps> = ({
 
   // Edit mode - show input field with save/cancel buttons
   return (
-    <div className="mb-6">
-      <h2 className="text-lg font-medium">{label}</h2>
-      {multiline ? (
-        <textarea
-          value={fieldValue}
-          onChange={(e) => setFieldValue(e.target.value)}
-          rows={3}
-          className="textarea textarea-bordered w-full bg-base-200"
-          disabled={disabled}
-          required={required}
-        />
-      ) : (
-        <input
-          type={type}
-          value={fieldValue}
-          onChange={(e) => setFieldValue(e.target.value)}
-          className="input input-bordered w-full bg-base-200"
-          disabled={disabled}
-          required={required}
-        />
-      )}
-      <div className="flex mt-2 space-x-2">
-        <button onClick={handleSave} className="btn btn-sm btn-accent">
-          Save
-        </button>
-        <button onClick={handleCancel} className="btn btn-sm btn-neutral">
-          Cancel
-        </button>
+    <div className="mb-4">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
+          <h3 className="text-xs font-semibold text-blue-800 uppercase tracking-wide">
+            Editing {label}
+          </h3>
+        </div>
+
+        {multiline ? (
+          <textarea
+            value={fieldValue}
+            onChange={(e) => setFieldValue(e.target.value)}
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none text-sm"
+            disabled={disabled}
+            required={required}
+            placeholder={`Enter ${label.toLowerCase()}...`}
+          />
+        ) : (
+          <input
+            type={type}
+            value={fieldValue}
+            onChange={(e) => setFieldValue(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
+            disabled={disabled}
+            required={required}
+            placeholder={`Enter ${label.toLowerCase()}...`}
+          />
+        )}
+
+        <div className="flex gap-2 mt-3">
+          <button
+            onClick={handleSave}
+            className="px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-1.5 text-sm font-medium"
+          >
+            <svg
+              className="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            Save
+          </button>
+          <button
+            onClick={handleCancel}
+            className="px-3 py-1.5 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200 flex items-center gap-1.5 text-sm font-medium"
+          >
+            <svg
+              className="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   );

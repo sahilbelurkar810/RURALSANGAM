@@ -128,8 +128,11 @@ const getMyRequests = async (req, res) => {
 const getVolunteersForRequest = async (req, res) => {
   try {
     const request = await Request.findById(req.params.id)
-      .populate("volunteers.volunteer", "fullName skills") // populate volunteer details
-      .populate("school", "schoolName");
+      .populate(
+        "volunteers.volunteer",
+        "name email phoneNumber address education skills availability dob contribution"
+      ) // populate complete volunteer details
+      .populate("school", "name");
 
     if (!request) return res.status(404).json({ msg: "Request not found" });
 
