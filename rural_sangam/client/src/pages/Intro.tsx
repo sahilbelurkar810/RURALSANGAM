@@ -93,11 +93,11 @@ function Intro() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             <div>
-              <p className="text-5xl font-bold text-blue-600">500+</p>
+              <p className="text-5xl font-bold text-blue-600">100+</p>
               <p className="mt-2 text-gray-600">Schools Supported</p>
             </div>
             <div>
-              <p className="text-5xl font-bold text-blue-600">1200+</p>
+              <p className="text-5xl font-bold text-blue-600">1000+</p>
               <p className="mt-2 text-gray-600">Active Volunteers</p>
             </div>
             <div>

@@ -89,46 +89,46 @@ const SignUp = () => {
   }, [formData]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-base-100 to-base-300">
-      <div className="bg-base-200 p-8 md:p-10 rounded-lg shadow-xl w-full max-w-md transform transition-all hover:scale-[1.01]">
-        <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center text-accent">Sign Up</h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label htmlFor="name" className="block text-sm font-semibold">
-              Name <span className="text-accent">*</span>
+    <div className="min-h-screen flex items-center justify-center px-2 sm:px-4 md:px-6 lg:px-8 py-6 md:py-12 bg-gradient-to-b from-black to-black">
+      <div className="bg-black p-4 sm:p-6 md:p-8 lg:p-10 rounded-2xl shadow-2xl w-full max-w-md lg:max-w-lg transform transition-all duration-300 hover:scale-[1.02] text-white from-black to-black">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-6 md:mb-10 text-center text-blue-600 bg-clip-text">Sign Up</h2>
+        <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8 from-black to-black">
+          <div className="space-y-3 md:space-y-4">
+            <label htmlFor="name" className="block text-sm font-bold tracking-wide text-white">
+              Name <span className="text-blue-400">*</span>
             </label>
             <input
               type="text"
               id="name"
-              className="input input-bordered w-full focus:ring-2 focus:ring-accent transition-all"
+              className="input input-bordered w-full focus:ring-4 focus:ring-blue-400 transition-all duration-300 rounded-md shadow-sm bg-gray-700 text-white"
               placeholder="Enter your name"
               value={formData.name}
               onChange={handleChange}
             />
           </div>
-          <div className="space-y-2">
-            <label htmlFor="email" className="block text-sm font-semibold">
-              Email <span className="text-accent">*</span>
+          <div className="space-y-3 md:space-y-4">
+            <label htmlFor="email" className="block text-sm font-bold tracking-wide text-white">
+              Email <span className="text-blue-400">*</span>
             </label>
             <input
               type="email"
               id="email"
-              className="input input-bordered w-full focus:ring-2 focus:ring-accent transition-all"
+              className="input input-bordered w-full focus:ring-4 focus:ring-blue-400 transition-all duration-300 rounded-md shadow-sm bg-gray-700 text-white"
               placeholder="Enter your email"
               value={formData.email}
               onChange={handleChange}
             />
             {errors.email && (
-              <p className="text-error text-sm mt-1">{errors.email}</p>
+              <p className="text-red-400 text-sm mt-2 font-medium">{errors.email}</p>
             )}
           </div>
-          <div className="space-y-2">
-            <label htmlFor="role" className="block text-sm font-semibold">
-              Role <span className="text-accent">*</span>
+          <div className="space-y-3 md:space-y-4">
+            <label htmlFor="role" className="block text-sm font-bold tracking-wide text-white">
+              Role <span className="text-blue-400">*</span>
             </label>
             <select
               id="role"
-              className="select select-bordered w-full focus:ring-2 focus:ring-accent transition-all"
+              className="select select-bordered w-full focus:ring-4 focus:ring-blue-400 transition-all duration-300 rounded-md shadow-sm bg-gray-700 text-white"
               value={formData.role}
               onChange={handleChange}
             >
@@ -136,61 +136,61 @@ const SignUp = () => {
               <option value="school">School</option>
             </select>
           </div>
-          <div className="space-y-2">
-            <label htmlFor="password" className="block text-sm font-semibold">
-              Password <span className="text-accent">*</span>
+          <div className="space-y-3 md:space-y-4">
+            <label htmlFor="password" className="block text-sm font-bold tracking-wide text-white">
+              Password <span className="text-blue-400">*</span>
             </label>
             <input
               type="password"
               id="password"
-              className="input input-bordered w-full focus:ring-2 focus:ring-accent transition-all"
+              className="input input-bordered w-full focus:ring-4 focus:ring-blue-400 transition-all duration-300 rounded-md shadow-sm bg-gray-700 text-white"
               placeholder="Enter your password"
               value={formData.password}
               onChange={handleChange}
             />
           </div>
-          <div className="space-y-2">
-            <label htmlFor="reenterPassword" className="block text-sm font-semibold">
-              Re-enter Password <span className="text-accent">*</span>
+          <div className="space-y-3 md:space-y-4">
+            <label htmlFor="reenterPassword" className="block text-sm font-bold tracking-wide text-white">
+              Re-enter Password <span className="text-blue-400">*</span>
             </label>
             <input
               type="password"
               id="reenterPassword"
-              className="input input-bordered w-full focus:ring-2 focus:ring-accent transition-all"
+              className="input input-bordered w-full focus:ring-4 focus:ring-blue-400 transition-all duration-300 rounded-md shadow-sm bg-gray-700 text-white"
               placeholder="Re-enter your password"
               value={formData.reenterPassword}
               onChange={handleChange}
             />
             {errors.password && (
-              <p className="text-error text-sm mt-1">{errors.password}</p>
+              <p className="text-red-400 text-sm mt-2 font-medium">{errors.password}</p>
             )}
           </div>
           {error && (
-            <div className="p-3 rounded bg-error bg-opacity-10 text-error text-center text-sm">
+            <div className="p-4 rounded-xl bg-red-900 text-red-200 text-center text-sm font-medium border border-red-700">
               {error}
             </div>
           )}
           <button
             type="submit"
-            className="btn bg-accent hover:bg-accent-focus w-full text-white font-semibold transition-all duration-300 transform hover:scale-[1.02]"
+            className="btn bg-blue-600 hover:bg-blue-700 w-full text-white font-bold py-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg disabled:opacity-70 disabled:hover:scale-100 shadow-[0_0_15px_rgba(59,130,246,0.5)] ring-4 ring-blue-400"
             disabled={!isFormValid || isLoading}
           >
             {isLoading ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <span className="flex items-center justify-center space-x-3">
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Signing up...
+                <span>Signing up...</span>
               </span>
             ) : (
               "Sign Up"
             )}
           </button>
         </form>
-        <p className="mt-6 text-center text-sm">
+        <p className="mt-6 md:mt-8 text-center text-sm font-medium text-white">
           Already have an account?{" "}
-          <a href="/login" className="text-accent hover:text-accent-focus font-semibold transition-colors">
+          <a href="/login" className="text-blue-400 hover:text-blue-300 font-bold transition-colors hover:underline">
             Login
           </a>
         </p>
