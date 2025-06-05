@@ -12,6 +12,19 @@ import SchoolProfile from "../pages/SchoolProfile";
 import VolunteerProfile from "../pages/VolunteerProfile";
 import { useAuth } from "../hooks/useAuth";
 
+// Dashboard imports (to be created)
+import SchoolDashboard from "../pages/dashboards/SchoolDashboard";
+import VolunteerDashboard from "../pages/dashboards/VolunteerDashboard";
+
+// Request management imports (to be created)
+import CreateRequest from "../pages/requests/CreateRequest";
+import ViewRequests from "../pages/requests/ViewRequests";
+import RequestDetails from "../pages/requests/RequestDetails";
+import ManageApplications from "../pages/requests/ManageApplications";
+
+// Notification imports (to be created)
+import Notifications from "../pages/notifications/Notifications";
+
 // Define props interface for RoleRoute
 interface RoleRouteProps {
   children: ReactNode;
@@ -43,7 +56,15 @@ export default function AppRoutes() {
         <Route element={<HomeLayout />}>
           <Route path="/home" element={<Home />} />
 
-          {/* School profile route */}
+          {/* School Routes */}
+          <Route
+            path="/school/dashboard"
+            element={
+              <RoleRoute allowedRole="school">
+                <SchoolDashboard />
+              </RoleRoute>
+            }
+          />
           <Route
             path="/school/profile"
             element={
@@ -52,8 +73,48 @@ export default function AppRoutes() {
               </RoleRoute>
             }
           />
+          <Route
+            path="/school/requests/create"
+            element={
+              <RoleRoute allowedRole="school">
+                <CreateRequest />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/school/requests"
+            element={
+              <RoleRoute allowedRole="school">
+                <ViewRequests />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/school/requests/:id"
+            element={
+              <RoleRoute allowedRole="school">
+                <RequestDetails />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/school/requests/:id/applications"
+            element={
+              <RoleRoute allowedRole="school">
+                <ManageApplications />
+              </RoleRoute>
+            }
+          />
 
-          {/* Volunteer profile route */}
+          {/* Volunteer Routes */}
+          <Route
+            path="/volunteer/dashboard"
+            element={
+              <RoleRoute allowedRole="volunteer">
+                <VolunteerDashboard />
+              </RoleRoute>
+            }
+          />
           <Route
             path="/volunteer/profile"
             element={
@@ -62,6 +123,25 @@ export default function AppRoutes() {
               </RoleRoute>
             }
           />
+          <Route
+            path="/volunteer/requests"
+            element={
+              <RoleRoute allowedRole="volunteer">
+                <ViewRequests />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/volunteer/requests/:id"
+            element={
+              <RoleRoute allowedRole="volunteer">
+                <RequestDetails />
+              </RoleRoute>
+            }
+          />
+
+          {/* Shared Routes */}
+          <Route path="/notifications" element={<Notifications />} />
         </Route>
       </Route>
     </Routes>
