@@ -1,40 +1,95 @@
 import axios from "axios";
+import { handleApiError, logError } from "../utils/errorHandling";
 
-type register = {
+// Base API URL
+const API_BASE = import.meta.env.VITE_API_URL;
+
+// Types
+type RegisterCredentials = {
   name: string;
   email: string;
   password: string;
   role: string;
 };
 
-type login = {
+type LoginCredentials = {
   email: string;
   password: string;
 };
 
-const register = async (creds: register) => {
+// Auth Services
+export const register = async (creds: RegisterCredentials) => {
   try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/auth/register`,
-      creds
-    );
-    console.log("Registration successful:", response.data);
+    const response = await axios.post(`${API_BASE}/auth/register`, creds, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(
-        "Error during registration:",
-        error.response?.data || error.message
-      );
-    } else {
-      console.error("Unexpected error:", error);
+    logError("Registration failed", error);
+    throw new Error(handleApiError(error, "Registration failed"));
+  }
+};
+
+export const login = async (creds: LoginCredentials) => {
+  try {
+    const response = await axios.post(`${API_BASE}/auth/login`, creds, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    logError("Login failed", error);
+    throw new Error(handleApiError(error, "Login failed"));
+  }
+};
+
+export const checkAuthStatus = async () => {
+  try {
+    const response = await axios.get(`${API_BASE}/auth/me`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    // A 401 error means the user is not logged in (no valid cookie)
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      // Don't log 401s as they're expected when not logged in
+      throw error;
     }
+
+    logError("Auth status check failed", error);
     throw error;
   }
 };
 
-const login = async (creds: login) => {
-  console.log("Logging in user...", creds);
+export const logoutUser = async (): Promise<void> => {
+  try {
+    await axios.post(`${API_BASE}/auth/logout`, {}, { withCredentials: true });
+  } catch (error) {
+    logError("Logout failed", error);
+    throw error;
+  }
 };
 
-export { register, login };
+// Additional auth services
+export const getUserById = async (id: string) => {
+  try {
+    const response = await axios.get(`${API_BASE}/auth/getUser/${id}`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    logError("Get user failed", error);
+    throw new Error(handleApiError(error, "Failed to get user"));
+  }
+};
+
+export const getAllUsers = async () => {
+  try {
+    const response = await axios.get(`${API_BASE}/auth/getAllUsers`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    logError("Get all users failed", error);
+    throw new Error(handleApiError(error, "Failed to get users"));
+  }
+};

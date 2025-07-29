@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: retro, lemonade, caramellatte, forest, autumn, dracula,  corporate, business, fantasy, cyberpunk, synthwave, acid, luxury, abyss
+  themes: "light"
 }
 
 
