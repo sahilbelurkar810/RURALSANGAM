@@ -25,6 +25,9 @@ import ManageApplications from "../pages/requests/ManageApplications";
 // Notification imports (to be created)
 import Notifications from "../pages/notifications/Notifications";
 
+// Room imports
+import { RoomView } from "../components/rooms";
+
 // Define props interface for RoleRoute
 interface RoleRouteProps {
   children: ReactNode;
@@ -142,6 +145,7 @@ export default function AppRoutes() {
 
           {/* Shared Routes */}
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/rooms/:roomId" element={<RoomView />} />
         </Route>
       </Route>
     </Routes>
