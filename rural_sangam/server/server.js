@@ -32,7 +32,5 @@ app.use((req, res) => {
   console.log(`Unhandled route: ${req.method} ${req.originalUrl}`);
   res.status(404).json({ message: "Route not found" });
 });
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+
+module.exports = app;
