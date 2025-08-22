@@ -26,7 +26,7 @@ import ManageApplications from "../pages/requests/ManageApplications";
 import Notifications from "../pages/notifications/Notifications";
 
 // Room imports
-import { RoomsList, RoomView } from "../components/rooms";
+import { RoomView } from "../components/rooms";
 
 // Define props interface for RoleRoute
 interface RoleRouteProps {
@@ -145,7 +145,6 @@ export default function AppRoutes() {
 
           {/* Shared Routes */}
           <Route path="/notifications" element={<Notifications />} />
-          <Route path="/rooms" element={<RoomsList />} />
           <Route path="/rooms/:roomId" element={<RoomView />} />
         </Route>
       </Route>

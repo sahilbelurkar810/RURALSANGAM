@@ -8,7 +8,7 @@ const API_BASE = import.meta.env.VITE_API_URL;
 export type Message = {
   sender: string;
   senderName: string;
-  senderRole: 'school' | 'volunteer';
+  senderRole: "school" | "volunteer";
   message: string;
   timestamp: string;
   _id?: string;
@@ -70,8 +70,9 @@ export const getRoomDetails = async (roomId: string): Promise<Room> => {
 
 export const sendMessage = async (roomId: string, message: string) => {
   try {
-    const response = await axios.post(`${API_BASE}/rooms/${roomId}/message`, 
-      { message }, 
+    const response = await axios.post(
+      `${API_BASE}/rooms/${roomId}/message`,
+      { message },
       { withCredentials: true }
     );
     return response.data;
@@ -83,10 +84,12 @@ export const sendMessage = async (roomId: string, message: string) => {
 
 export const getMessages = async (roomId: string, lastMessageTime?: string) => {
   try {
-    const url = lastMessageTime 
-      ? `${API_BASE}/rooms/${roomId}/messages?lastMessageTime=${encodeURIComponent(lastMessageTime)}`
+    const url = lastMessageTime
+      ? `${API_BASE}/rooms/${roomId}/messages?lastMessageTime=${encodeURIComponent(
+          lastMessageTime
+        )}`
       : `${API_BASE}/rooms/${roomId}/messages`;
-    
+
     const response = await axios.get(url, {
       withCredentials: true,
     });

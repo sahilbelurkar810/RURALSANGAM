@@ -116,7 +116,7 @@ const applyToRequest = async (req, res) => {
 const getMyRequests = async (req, res) => {
   try {
     const school = await School.findOne({ userId: req.user.id });
-    
+
     if (!school) {
       return res.status(404).json({ msg: "School profile not found" });
     }
@@ -124,13 +124,12 @@ const getMyRequests = async (req, res) => {
     const requests = await Request.find({ school: school._id })
       .populate("volunteers.volunteer", "name skills")
       .sort({ createdAt: -1 });
-      
+
     res.json(requests);
   } catch (err) {
     res.status(500).json({ msg: "Server error", error: err.message });
   }
 };
-
 
 // Get volunteers applied to a request
 const getVolunteersForRequest = async (req, res) => {
@@ -165,11 +164,11 @@ const updateVolunteerStatus = async (req, res) => {
     }
 
     const volunteerEntry = request.volunteers.find(
-      (v) =>
-        v.volunteer && v.volunteer.toString() === req.params.volunteerId
+      (v) => v.volunteer && v.volunteer.toString() === req.params.volunteerId
     );
 
-    if (!volunteerEntry) return res.status(404).json({ msg: 'Volunteer not found in request' });
+    if (!volunteerEntry)
+      return res.status(404).json({ msg: "Volunteer not found in request" });
 
     volunteerEntry.status = status;
 
@@ -201,7 +200,7 @@ const updateVolunteerStatus = async (req, res) => {
         );
         console.log(`Room created: ${room.roomId}`);
       } catch (roomError) {
-        console.error('Error creating room:', roomError);
+        console.error("Error creating room:", roomError);
         // Don't fail the approval if room creation fails
       }
     }
@@ -410,18 +409,16 @@ const withdrawApplication = async (req, res) => {
   }
 };
 
-
 module.exports = {
-    createRequest,
-    getOpenRequests,
-    applyToRequest,
-    getMyRequests,
-    getVolunteersForRequest,
-    updateVolunteerStatus,
-    getMyApplications,
-    updateRequest,
-    deleteRequest,
-    closeRequest,
-    withdrawApplication
+  createRequest,
+  getOpenRequests,
+  applyToRequest,
+  getMyRequests,
+  getVolunteersForRequest,
+  updateVolunteerStatus,
+  getMyApplications,
+  updateRequest,
+  deleteRequest,
+  closeRequest,
+  withdrawApplication,
 };
-

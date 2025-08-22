@@ -16,7 +16,6 @@ export default function ProtectedNavbar() {
   // Base links available to all users
   const baseLinks: NavLinkType[] = [
     { path: "/home", label: "Home" },
-    { path: "/rooms", label: "Rooms" },
     {
       path: "/notifications",
       label: "Notifications",
@@ -63,9 +62,7 @@ export default function ProtectedNavbar() {
     <nav className="bg-gray-800 text-white p-4 flex justify-between items-center px-[100px]">
       <div className="flex items-center space-x-4 gap-8">
         <div>
-          <span className="font-bold text-3xl text-base-content">
-            RuralSangam
-          </span>
+          <span className="font-bold text-3xl text-white">RuralSangam</span>
         </div>
         <div>
           <ul className="hidden md:flex space-x-16 text-lg">
@@ -101,6 +98,12 @@ export default function ProtectedNavbar() {
         >
           Your Profile
         </Link>
+        <button
+          onClick={handleLogout}
+          className="bg-red-600 hover:bg-red-700 text-white font-medium py-1 px-4 rounded-md"
+        >
+          Logout
+        </button>
       </div>
     </nav>
   );
