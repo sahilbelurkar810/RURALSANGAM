@@ -15,7 +15,6 @@ export type VolunteerProfile = {
   skills: string[];
   dob: string;
   availability: string;
-  contribution?: string;
   acceptedSchool?: string[];
   education: string;
   requestedSchool?: string[];
@@ -23,7 +22,10 @@ export type VolunteerProfile = {
   updatedAt?: string;
 };
 
-export type CreateVolunteerData = Omit<VolunteerProfile, '_id' | 'userId' | 'createdAt' | 'updatedAt'>;
+export type CreateVolunteerData = Omit<
+  VolunteerProfile,
+  "_id" | "userId" | "createdAt" | "updatedAt"
+>;
 
 // Volunteer Services
 export const getAllVolunteers = async () => {
@@ -58,19 +60,30 @@ export const createVolunteer = async (volunteerData: CreateVolunteerData) => {
     return response.data;
   } catch (error) {
     logError("Create volunteer failed", error);
-    throw new Error(handleApiError(error, "Failed to create volunteer profile"));
+    throw new Error(
+      handleApiError(error, "Failed to create volunteer profile")
+    );
   }
 };
 
-export const updateVolunteer = async (id: string, volunteerData: Partial<CreateVolunteerData>) => {
+export const updateVolunteer = async (
+  id: string,
+  volunteerData: Partial<CreateVolunteerData>
+) => {
   try {
-    const response = await axios.put(`${API_BASE}/volunteer/${id}`, volunteerData, {
-      withCredentials: true,
-    });
+    const response = await axios.put(
+      `${API_BASE}/volunteer/${id}`,
+      volunteerData,
+      {
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error) {
     logError("Update volunteer failed", error);
-    throw new Error(handleApiError(error, "Failed to update volunteer profile"));
+    throw new Error(
+      handleApiError(error, "Failed to update volunteer profile")
+    );
   }
 };
 
@@ -82,6 +95,8 @@ export const deleteVolunteer = async (id: string) => {
     return response.data;
   } catch (error) {
     logError("Delete volunteer failed", error);
-    throw new Error(handleApiError(error, "Failed to delete volunteer profile"));
+    throw new Error(
+      handleApiError(error, "Failed to delete volunteer profile")
+    );
   }
 };
