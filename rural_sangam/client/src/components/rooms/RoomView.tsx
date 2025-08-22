@@ -303,7 +303,7 @@ const RoomView: React.FC = () => {
               {/* Jitsi Meet Iframe - Much Larger */}
               <div className="flex-1 bg-gray-900 rounded-lg overflow-hidden">
                 <iframe
-                  src={`https://meet.jit.si/${room.jitsiRoomName}#config.startWithAudioMuted=false&config.startWithVideoMuted=false&config.prejoinPageEnabled=false&config.disableInviteFunctions=true`}
+                  src={`https://8x8.vc/${import.meta.env.VITE_JAAS_APP_ID}/${room.jitsiRoomName}?jwt=${import.meta.env.VITE_JAAS_JWT_SECRET}`}
                   width="100%"
                   height="100%"
                   frameBorder="0"
