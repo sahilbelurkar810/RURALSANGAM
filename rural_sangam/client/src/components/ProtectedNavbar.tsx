@@ -1,7 +1,12 @@
-import React from "react";
 import { Link, NavLink, useNavigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 import { useNotifications } from "../hooks/useNotifications";
+
+type NavLinkType = {
+  path: string;
+  label: string;
+  badge?: number;
+};
 
 export default function ProtectedNavbar() {
   const { user, logout } = useAuth();
@@ -9,8 +14,9 @@ export default function ProtectedNavbar() {
   const navigate = useNavigate();
 
   // Base links available to all users
-  const baseLinks = [
+  const baseLinks: NavLinkType[] = [
     { path: "/home", label: "Home" },
+    { path: "/rooms", label: "Rooms" },
     {
       path: "/notifications",
       label: "Notifications",
@@ -19,7 +25,7 @@ export default function ProtectedNavbar() {
   ];
 
   // Role-specific links
-  const roleSpecificLinks =
+  const roleSpecificLinks: NavLinkType[] =
     user && user.user
       ? user.user.role === "school"
         ? [

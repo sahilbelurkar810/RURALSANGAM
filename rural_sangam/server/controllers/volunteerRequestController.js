@@ -1,5 +1,5 @@
 const VolunteerRequest = require('../models/volunteerRequest');
-const Volunteer = require('../models/volunteer');
+const Volunteer = require('../models/Volunteer');
 
 
 const volunteerCreateRequest = async (req, res) => {

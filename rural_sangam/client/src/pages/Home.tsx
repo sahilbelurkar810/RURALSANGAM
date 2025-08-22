@@ -1,8 +1,27 @@
 import { useAuth } from "../hooks/useAuth";
 import { Link, Navigate } from "react-router";
+import { useState, useEffect } from "react";
+import { getUserRooms, Room } from "../services";
 
 const Home = () => {
   const { user } = useAuth();
+  const [rooms, setRooms] = useState<Room[]>([]);
+
+  // Load user's rooms
+  useEffect(() => {
+    const loadRooms = async () => {
+      if (user && user.profile) {
+        try {
+          const userRooms = await getUserRooms();
+          setRooms(userRooms);
+        } catch (error) {
+          console.error('Failed to load rooms:', error);
+        }
+      }
+    };
+
+    loadRooms();
+  }, [user]);
 
   // Redirect users with profiles to their dashboards
   if (user && user.user && user.profile) {
@@ -73,6 +92,32 @@ const Home = () => {
               Set Up Volunteer Profile
             </Link>
           ) : null}
+        </div>
+      )}
+
+      {/* Active Rooms Section */}
+      {user && user.profile && rooms.length > 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-blue-800">
+              🎯 Active Collaboration Rooms ({rooms.length})
+            </h3>
+            <Link
+              to="/rooms"
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            >
+              View All →
+            </Link>
+          </div>
+          <p className="text-blue-800 mb-4">
+            You have active rooms where you can chat and video call with collaborators.
+          </p>
+          <Link
+            to="/rooms"
+            className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Join Rooms
+          </Link>
         </div>
       )}
     </div>

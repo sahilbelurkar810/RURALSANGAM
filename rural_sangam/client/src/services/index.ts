@@ -4,6 +4,7 @@ export * from './volunteerServices';
 export * from './schoolServices';
 export * from './requestServices';
 export * from './notificationServices';
+export * from './roomServices';
 
 // Re-export types for easy access
 export type { VolunteerProfile, CreateVolunteerData } from './volunteerServices';

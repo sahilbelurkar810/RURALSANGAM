@@ -3,6 +3,7 @@ const Request = require("../models/request");
 const Volunteer = require("../models/Volunteer");
 const sendNotification = require("../utils/sendNotification");
 const User = require("../models/User");
+const { createRoom } = require("./roomController");
 
 const createRequest = async (req, res) => {
   try {
@@ -41,47 +42,13 @@ const createRequest = async (req, res) => {
 // Volunteer sees open requests
 const getOpenRequests = async (req, res) => {
   try {
-
     const requests = await Request.find({ isOpen: true }).populate(
       "school",
       "schoolName location"
     );
     res.json(requests);
   } catch (err) {
-    res.status(500).json({ msg: err.message });
-
-    const { skills, location } = req.query;
-
-    let filter = {
-      status: "open",
-      currentVolunteers: { $lt: "$requiredVolunteers" },
-    };
-
-    if (skills) {
-      const skillArray = skills
-        .split(",")
-        .map((skill) => skill.trim().toLowerCase());
-      filter.requiredSkills = { $in: skillArray };
-    }
-
-    if (location) {
-      // Assuming we store location on school level
-      const schoolsInLocation = await School.find({
-        location: new RegExp(location, "i"),
-      }).select("_id");
-      filter.school = { $in: schoolsInLocation.map((s) => s._id) };
-    }
-
-    // Fetch matching requests
-    const requests = await Request.find(filter).populate(
-      "school",
-      "schoolName location"
-    );
-
-    res.json({ requests });
-  } catch (err) {
     res.status(500).json({ msg: "Server error", error: err.message });
-
   }
 };
 
@@ -149,29 +116,18 @@ const applyToRequest = async (req, res) => {
 const getMyRequests = async (req, res) => {
   try {
     const school = await School.findOne({ userId: req.user.id });
-
-    const requests = await Request.find({ school: school._id }).populate(
-      "volunteers"
-    );
-    res.json(requests);
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-
-    if (!school)
+    
+    if (!school) {
       return res.status(404).json({ msg: "School profile not found" });
+    }
 
-    const filter = { school: school._id };
-    if (req.query.status === "open") filter.isOpen = true;
-    else if (req.query.status === "closed") filter.isOpen = false;
-
-    const requests = await Request.find(filter)
-      .populate("volunteers.volunteer", "fullName skills")
+    const requests = await Request.find({ school: school._id })
+      .populate("volunteers.volunteer", "name skills")
       .sort({ createdAt: -1 });
-
+      
     res.json(requests);
   } catch (err) {
     res.status(500).json({ msg: "Server error", error: err.message });
-
   }
 };
 
@@ -199,7 +155,6 @@ const getVolunteersForRequest = async (req, res) => {
 
 // Accept or reject a volunteer
 const updateVolunteerStatus = async (req, res) => {
-
   try {
     const { status } = req.body; // 'accepted' or 'rejected'
     const request = await Request.findById(req.params.requestId);
@@ -207,69 +162,57 @@ const updateVolunteerStatus = async (req, res) => {
     const school = await School.findOne({ userId: req.user.id });
     if (!school || request.school.toString() !== school._id.toString()) {
       return res.status(403).json({ msg: "Not authorized" });
-
-    try {
-        const { status } = req.body; // 'accepted' or 'rejected'
-        const request = await Request.findById(req.params.requestId);
-
-        const school = await School.findOne({ userId: req.user.id });
-        if (!school || request.school.toString() !== school._id.toString()) {
-            return res.status(403).json({ msg: 'Not authorized' });
-        }
-
-        const volunteerEntry = request.volunteers.find(
-          (v) =>
-            v.volunteer && v.volunteer.toString() === req.params.volunteerId
-        );
-
-
-        if (!volunteerEntry) return res.status(404).json({ msg: 'Volunteer not found in request' });
-
-        volunteerEntry.status = status;
-
-        // 👇 Count accepted volunteers
-        const acceptedCount = request.volunteers.filter(
-          (v) => v.status === "accepted"
-        ).length;
-
-        // 👇 Update isOpen if accepted count matches required
-        if (
-          status === "accepted" &&
-          acceptedCount + 1 >= request.requiredVolunteers
-        ) {
-          request.isOpen = false;
-        }
-
-        await request.save();
-
-        await sendNotification({
-          recipient: volunteerEntry.volunteer,
-          sender: req.user.id,
-          message: `Your application for "${request.requirementDescription}" was ${status}.`,
-          link: `/volunteer-dashboard/requests/${request._id}`,
-        });
-
-        res.json({ msg: `Volunteer ${status} successfully` });
-    } catch (err) {
-        res.status(500).json({ msg: err.message });
-
     }
 
     const volunteerEntry = request.volunteers.find(
-      (v) => v.volunteer.toString() === req.params.volunteerId
+      (v) =>
+        v.volunteer && v.volunteer.toString() === req.params.volunteerId
     );
 
-    if (!volunteerEntry)
-      return res.status(404).json({ msg: "Volunteer not found in request" });
+    if (!volunteerEntry) return res.status(404).json({ msg: 'Volunteer not found in request' });
 
     volunteerEntry.status = status;
+
+    // 👇 Count accepted volunteers
+    const acceptedCount = request.volunteers.filter(
+      (v) => v.status === "accepted"
+    ).length;
+
+    // 👇 Update isOpen if accepted count matches required
+    if (
+      status === "accepted" &&
+      acceptedCount + 1 >= request.requiredVolunteers
+    ) {
+      request.isOpen = false;
+    }
+
     await request.save();
+
+    // 🆕 Create room if volunteer is accepted
+    if (status === "accepted") {
+      try {
+        const volunteer = await Volunteer.findById(req.params.volunteerId);
+        const room = await createRoom(
+          request._id,
+          volunteer._id,
+          school._id,
+          req.user.id, // school user ID
+          volunteer.userId // volunteer user ID
+        );
+        console.log(`Room created: ${room.roomId}`);
+      } catch (roomError) {
+        console.error('Error creating room:', roomError);
+        // Don't fail the approval if room creation fails
+      }
+    }
+
     await sendNotification({
       recipient: volunteerEntry.volunteer,
       sender: req.user.id,
       message: `Your application for "${request.requirementDescription}" was ${status}.`,
       link: `/volunteer-dashboard/requests/${request._id}`,
     });
+
     res.json({ msg: `Volunteer ${status} successfully` });
   } catch (err) {
     res.status(500).json({ msg: err.message });
