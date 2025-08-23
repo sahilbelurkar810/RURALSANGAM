@@ -17,11 +17,11 @@ const app = express();
 // Connect to database
 connectDB();
 
-// CORS configuration - single, corrected version
+// CORS configuration - same domain setup
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://ruralsangam.com', 'https://www.ruralsangam.com']
-    : ['http://localhost:5173', 'http://localhost:3000'], // Add both common dev ports
+    : ['http://localhost:5173', 'http://localhost:3000'], 
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']

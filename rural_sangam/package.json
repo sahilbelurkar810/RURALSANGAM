@@ -1,0 +1,24 @@
+{
+  "name": "ruralsangam",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Rural Sangam - Monorepo",
+  "scripts": {
+    "install:client": "cd client && npm install",
+    "install:server": "cd server && npm install", 
+    "install:all": "npm run install:client && npm run install:server",
+    "build": "cd client && npm run build",
+    "build:client": "cd client && npm run build",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "start": "cd server && node server.js",
+    "vercel-build": "npm run install:all && npm run build:client"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}
